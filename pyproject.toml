@@ -1,0 +1,5 @@
+[project]
+name = "fixibake"
+version = "0.1.0"
+requires-python = "~=3.11.0"
+dependencies = ["charset-normalizer", "jupyter", "wordfreq[cjk]"]

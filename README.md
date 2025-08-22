@@ -1,18 +1,31 @@
-# template
+# Fixibake
 
-🌠 Where minds unite, dreams take flight
+🌠 Fix garbled CJK filenames with intelligent encoding detection
 
 ## ✨ Features
 
-- Feature 1
-- Feature 2
-- Feature 3
+- **Smart Detection**: Combines all filenames for improved encoding accuracy
+- **Multiple Candidates**: Shows top 3 encoding possibilities with preview
+- **Interactive Selection**: User-friendly interface when confidence is low
+- **Batch Processing**: Handles entire ZIP archives or directories at once
+- **CJK Optimized**: Specifically tuned for Chinese, Japanese, and Korean encodings
 
 ## 🚀 Usage
 
 ```bash
-git clone https://github.com/uigleki/template.git
-cd template
+git clone https://github.com/uigleki/fixibake.git
+cd fixibake
+pip install -r requirements.txt
+
+
+# Fix a ZIP file
+python fixibake.py corrupted.zip
+
+# Interactive mode for low confidence cases
+python fixibake.py --interactive mixed_encoding.zip
+
+# Process a directory
+python fixibake.py --directory /path/to/garbled/files
 ```
 
 ## 📄 License
