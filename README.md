@@ -1,32 +1,22 @@
 # Fixibake
 
-🌠 Fix garbled CJK filenames with intelligent encoding detection
+🌠 A GUI tool for extracting ZIP files with garbled CJK filenames
 
 ## ✨ Features
 
-- **Smart Detection**: Combines all filenames for improved encoding accuracy
-- **Multiple Candidates**: Shows top 3 encoding possibilities with preview
-- **Interactive Selection**: User-friendly interface when confidence is low
-- **Batch Processing**: Handles entire ZIP archives or directories at once
-- **CJK Optimized**: Specifically tuned for Chinese, Japanese, and Korean encodings
+- **Drag & Drop**: Simply drag ZIP files onto the application window
+- **CJK Encoding Selection**: Select from a list of CJK encodings with confidence scores
+- **Live Preview**: Preview filename corrections before extraction
+- **One-Click Extract**: Extract files with correct encoding to selected directory
+- **CJK Only**: Specifically designed for CJK (Chinese, Japanese, Korean) filename issues only
 
 ## 🚀 Usage
 
-```bash
-git clone https://github.com/uigleki/fixibake.git
-cd fixibake
-pip install -r requirements.txt
-
-
-# Fix a ZIP file
-python fixibake.py corrupted.zip
-
-# Interactive mode for low confidence cases
-python fixibake.py --interactive mixed_encoding.zip
-
-# Process a directory
-python fixibake.py --directory /path/to/garbled/files
-```
+1. Launch the GUI application
+2. Drag and drop a ZIP file with garbled CJK filenames into the window
+3. Select the appropriate CJK encoding from the dropdown menu
+4. Preview the corrected filenames
+5. Click extract to decompress with proper encoding
 
 ## 📄 License
 

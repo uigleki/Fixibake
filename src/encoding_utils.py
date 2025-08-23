@@ -58,6 +58,3 @@ def detect_zip_encoding(file_path: str):
     print(
         f"Best: {best[0]}, score: {best[1]:.4f}, delta: {best[1] - second_best[1]:.4f}"
     )
-
-
-detect_zip_encoding("test.zip")
