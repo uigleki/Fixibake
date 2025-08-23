@@ -12,11 +12,34 @@
 
 ## 🚀 Usage
 
-1. Launch the GUI application
-2. Drag and drop a ZIP file with garbled CJK filenames into the window
-3. Select the appropriate CJK encoding from the dropdown menu
-4. Preview the corrected filenames
-5. Click extract to decompress with proper encoding
+1. Download the latest release from [GitHub Releases](https://github.com/uigleki/Fixibake/releases/latest)
+2. Extract the ZIP file and run `Fixibake.exe`
+3. Drag and drop a ZIP file with garbled CJK filenames into the window
+4. Select the appropriate CJK encoding from the dropdown menu
+5. Preview the corrected filenames
+6. Click extract to decompress with proper encoding
+
+## 🛠️ Development
+
+Built with Python 3.11 using:
+
+- **tkinter** - GUI framework
+- **wordfreq** - CJK character frequency analysis
+- **tkinterdnd2** - Drag and drop support
+- **pyinstaller** - Executable packaging
+
+### Building from source
+
+```bash
+# Install dependencies
+pip install -e .
+
+# Run from source
+python src/main.py
+
+# Build executable
+python build.py
+```
 
 ## 📄 License
 
