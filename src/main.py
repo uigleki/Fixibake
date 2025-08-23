@@ -6,7 +6,7 @@ from tkinter import filedialog, messagebox, ttk
 
 from tkinterdnd2 import DND_FILES, TkinterDnD
 
-from encoding_utils import detect_zip_filename_encoding
+from encoding_utils import detect_file_encoding
 
 
 class FixibakeGUI:
@@ -149,7 +149,7 @@ class FixibakeGUI:
             self.root.update()
 
             try:
-                self.encoding_results = detect_zip_filename_encoding(file_path)
+                self.encoding_results = detect_file_encoding(file_path)
 
                 for encoding, score, preview in self.encoding_results:
                     display_score = f"{score:.4f}" if score >= 0 else "Error"

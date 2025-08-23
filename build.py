@@ -8,10 +8,11 @@ if __name__ == "__main__":
         "pyinstaller",
         "--windowed",
         "--name=Fixibake",
-        "--collect-data=wordfreq",
-        "--collect-data=jieba",
         "--collect-data=ipadic",
+        "--collect-data=jieba",
         "--collect-data=mecab_ko_dic",
+        "--collect-data=python-magic-bin",
+        "--collect-data=wordfreq",
         "src/main.py",
     ]
 
