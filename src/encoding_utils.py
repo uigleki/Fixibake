@@ -18,11 +18,14 @@ def score_cjk_text(text: str, limit: int = 10000) -> tuple[float, str]:
     if not cjk_chars:
         return 0.0, ""
 
-    scores = {
-        lang: fmean(zipf_frequency(ch, lang) for ch in cjk_chars)
-        for lang in ZIPF_LANGUAGES
-    }
-    return max(scores.values()), "".join(cjk_chars)
+    try:
+        scores = {
+            lang: fmean(zipf_frequency(ch, lang) for ch in cjk_chars)
+            for lang in ZIPF_LANGUAGES
+        }
+        return max(scores.values()), "".join(cjk_chars)
+    except FileNotFoundError:
+        return -1, "FileNotFoundError"
 
 
 def detect_zip_filename_encoding(
