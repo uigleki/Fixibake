@@ -28,6 +28,9 @@ def detect_zip_filename_encoding(
     file_path: str, encodings: Optional[List[str]] = None
 ) -> List[Tuple[str, float, str]]:
     """Detect filename encoding of a ZIP archive by scoring decoded text."""
+    if not zipfile.is_zipfile(file_path):
+        raise ValueError(f"Not a valid ZIP file: {file_path}")
+
     encodings = encodings or DEFAULT_ENCODINGS
     results: List[Tuple[str, float, str]] = []
 
@@ -48,7 +51,7 @@ def detect_zip_encoding(file_path: str):
     results = detect_zip_filename_encoding(file_path)
 
     for enc, score, text in results:
-        print(f"{enc:10} {score:.4f} {text[:50]}...")
+        print(f"{enc:10} {score:.4f} {text[:50]}")
 
     best = results[0]
     second_best = results[1]

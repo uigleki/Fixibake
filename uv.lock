@@ -261,14 +261,12 @@ name = "fixibake"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
-    { name = "charset-normalizer" },
     { name = "jupyter" },
     { name = "wordfreq", extra = ["cjk"] },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "charset-normalizer" },
     { name = "jupyter" },
     { name = "wordfreq", extras = ["cjk"] },
 ]
