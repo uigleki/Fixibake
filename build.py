@@ -12,14 +12,17 @@ if __name__ == "__main__":
     cmd = [
         "pyinstaller",
         "--onefile",
-        "--console",
+        "--windowed",
         "--name=Fixibake",
         "--collect-all=wordfreq",
         "--collect-all=jieba",
         "--collect-all=ipadic",
         "--collect-all=mecab",
+        f"--add-data={data_path}{os.pathsep}wordfreq/data",
         "src/main.py",
     ]
+
+    print(f"data_path: {data_path}")
 
     result = subprocess.run(cmd)
     sys.exit(result.returncode)
