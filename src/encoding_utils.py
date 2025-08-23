@@ -9,6 +9,7 @@ CJK_PATTERN = re.compile(
     r"[\u3040-\u309f\u30a0-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uac00-\ud7af]"
 )
 DEFAULT_ENCODINGS = ("utf-8", "gbk", "big5", "shift_jis", "euc-jp", "euc-kr")
+ZIPF_LANGUAGES = ("zh", "ja", "ko")
 
 
 def score_cjk_text(text: str, limit: int = 10000) -> tuple[float, str]:
@@ -19,7 +20,7 @@ def score_cjk_text(text: str, limit: int = 10000) -> tuple[float, str]:
 
     scores = {
         lang: fmean(zipf_frequency(ch, lang) for ch in cjk_chars)
-        for lang in ("zh", "ja", "ko")
+        for lang in ZIPF_LANGUAGES
     }
     return max(scores.values()), "".join(cjk_chars)
 

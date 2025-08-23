@@ -140,7 +140,6 @@ class FixibakeGUI:
             self.zip_file_path = file_path
             self.drop_label.config(text=f"Loaded: {file_path.name}")
 
-            # Auto-set extract path to ZIP file directory with same-name folder
             auto_extract_path = file_path.parent / file_path.stem
             self.extract_path.set(str(auto_extract_path))
 
