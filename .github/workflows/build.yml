@@ -33,12 +33,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Fixibake-Windows
-          path: dist/Fixibake.exe
+          path: dist/Fixibake.zip
 
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/Fixibake.exe
+          files: dist/Fixibake.zip
           draft: false
           prerelease: false

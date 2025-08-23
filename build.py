@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
+import shutil
 import subprocess
 import sys
 
 if __name__ == "__main__":
     cmd = [
         "pyinstaller",
-        "--onefile",
         "--windowed",
         "--name=Fixibake",
         "--collect-data=wordfreq",
@@ -16,4 +16,7 @@ if __name__ == "__main__":
     ]
 
     result = subprocess.run(cmd)
+    if result.returncode == 0:
+        shutil.make_archive("dist/Fixibake", "zip", "dist", "Fixibake")
+
     sys.exit(result.returncode)
