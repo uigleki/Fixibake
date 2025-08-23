@@ -109,8 +109,8 @@ class FixibakeGUI:
         self.extract_btn.grid(row=3, column=0, pady=10)
 
     def setup_drag_drop(self):
-        self.drop_label.drop_target_register(DND_FILES)
-        self.drop_label.dnd_bind("<<Drop>>", self.on_drop)
+        self.root.drop_target_register(DND_FILES)
+        self.root.dnd_bind("<<Drop>>", self.on_drop)
 
     def on_drop(self, event: tk.Event):
         files = self.root.tk.splitlist(event.data)
