@@ -19,7 +19,8 @@ _CJK_LIMIT = 10_000
 
 def is_text_file(file_path: str | Path) -> bool:
     """Check if a file is a text file based on its MIME type."""
-    return magic.from_file(file_path, mime=True).startswith("text/")
+    with open(file_path, "rb") as f:
+        return magic.from_buffer(f.read(8192), mime=True).startswith("text/")
 
 
 def score_cjk_text(text: str, limit: int = _CJK_LIMIT) -> tuple[float, str]:
