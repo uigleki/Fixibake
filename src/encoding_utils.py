@@ -13,8 +13,9 @@ ZIPF_LANGUAGES = ("zh", "ja", "ko")
 
 DEFAULT_ENCODINGS = ("utf-8", "gbk", "big5", "shift_jis", "euc-jp", "euc-kr")
 
-_FILE_LIMIT = 1_000
-_CJK_LIMIT = 10_000
+FILE_LIMIT = 1_000
+CJK_LIMIT = 10_000
+CONTENT_PREVIEW = 10_000
 
 
 def is_text_file(file_path: str | Path) -> bool:
@@ -23,7 +24,7 @@ def is_text_file(file_path: str | Path) -> bool:
         return magic.from_buffer(f.read(8192), mime=True).startswith("text/")
 
 
-def score_cjk_text(text: str, limit: int = _CJK_LIMIT) -> tuple[float, str]:
+def score_cjk_text(text: str, limit: int = CJK_LIMIT) -> tuple[float, str]:
     """Return a naturalness score for CJK text based on character frequency."""
     cjk_chars = CJK_PATTERN.findall(text)[:limit]
     if not cjk_chars:
@@ -58,11 +59,11 @@ def detect_file_encoding(
             if is_zip:
                 with zipfile.ZipFile(path, "r", metadata_encoding=encoding) as zf:
                     content = "".join(
-                        info.filename for info in zf.infolist()[:_FILE_LIMIT]
+                        info.filename for info in zf.infolist()[:FILE_LIMIT]
                     )
             else:
                 with open(path, "r", encoding=encoding, errors="ignore") as f:
-                    content = f.read(10240)
+                    content = f.read(CONTENT_PREVIEW)
 
         except (UnicodeError, OSError):
             results.append((encoding, -1.0, "DecodeError"))

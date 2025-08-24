@@ -8,6 +8,9 @@ from tkinterdnd2 import DND_FILES, TkinterDnD
 
 from encoding_utils import detect_file_encoding, is_text_file
 
+PREVIEW_LENGTH = 50
+INVALID_FILE_MSG = "Please select a ZIP or text file"
+
 
 class FixibakeGUI:
     def __init__(self, root: tk.Tk):
@@ -18,7 +21,7 @@ class FixibakeGUI:
 
         self.file_path: Path | None = None
         self.encoding_results: list[tuple[str, float, str]] = []
-        self.is_zip: bool = False
+        self.is_zip = False
 
         self.setup_ui()
         self.setup_drag_drop()
@@ -38,13 +41,13 @@ class FixibakeGUI:
         self.setup_extract_button(main_frame)
 
     def setup_drop_area(self, parent: ttk.Frame):
-        drop_frame = ttk.LabelFrame(parent, text="ZIP File", padding="10")
+        drop_frame = ttk.LabelFrame(parent, text="File", padding="10")
         drop_frame.grid(row=0, column=0, sticky=(tk.W, tk.E), pady=(0, 10))
         drop_frame.columnconfigure(0, weight=1)
 
         self.drop_label = tk.Label(
             drop_frame,
-            text="Drag and drop ZIP file here",
+            text="Drag and drop file here or click to browse",
             bg="#f0f0f0",
             relief="sunken",
             height=3,
@@ -58,16 +61,12 @@ class FixibakeGUI:
         path_frame.grid(row=1, column=0, sticky=(tk.W, tk.E), pady=(0, 10))
         path_frame.columnconfigure(0, weight=1)
 
-        path_inner = ttk.Frame(path_frame)
-        path_inner.grid(row=0, column=0, sticky=(tk.W, tk.E))
-        path_inner.columnconfigure(0, weight=1)
-
         self.extract_path = tk.StringVar(value=str(Path.cwd()))
-        self.path_entry = ttk.Entry(path_inner, textvariable=self.extract_path)
+        self.path_entry = ttk.Entry(path_frame, textvariable=self.extract_path)
         self.path_entry.grid(row=0, column=0, sticky=(tk.W, tk.E), padx=(0, 5))
 
         browse_btn = ttk.Button(
-            path_inner, text="Browse", command=self.browse_extract_path
+            path_frame, text="Browse", command=self.browse_extract_path
         )
         browse_btn.grid(row=0, column=1)
 
@@ -88,9 +87,9 @@ class FixibakeGUI:
         self.encoding_tree.heading("score", text="Score")
         self.encoding_tree.heading("preview", text="Preview")
 
-        self.encoding_tree.column("encoding", width=100, minwidth=80)
-        self.encoding_tree.column("score", width=80, minwidth=60)
-        self.encoding_tree.column("preview", width=300, minwidth=200)
+        self.encoding_tree.column("encoding", width=80, stretch=False)
+        self.encoding_tree.column("score", width=60, stretch=False)
+        self.encoding_tree.column("preview", width=300, minwidth=200, stretch=True)
 
         scrollbar = ttk.Scrollbar(
             list_frame, orient="vertical", command=self.encoding_tree.yview
@@ -104,7 +103,7 @@ class FixibakeGUI:
         self.extract_btn = ttk.Button(
             parent,
             text="Extract with Selected Encoding",
-            command=self.extract_zip,
+            command=self.extract_file,
             state="disabled",
         )
         self.extract_btn.grid(row=3, column=0, pady=10)
@@ -118,12 +117,12 @@ class FixibakeGUI:
         if files:
             self.load_file(Path(files[0]))
         else:
-            messagebox.showerror("Error", "Please drop a ZIP or text file")
+            messagebox.showerror("Error", INVALID_FILE_MSG)
 
-    def browse_file(self, event: tk.Event | None = None):
+    def browse_file(self, event=None):
         file_path = filedialog.askopenfilename(
-            title="Select ZIP file",
-            filetypes=[("ZIP files", "*.zip"), ("Text files", "*.txt")],
+            title="Select File",
+            filetypes=[("Supported files", "*.zip;*.txt"), ("All files", "*.*")],
         )
         if file_path:
             self.load_file(Path(file_path))
@@ -134,96 +133,93 @@ class FixibakeGUI:
             self.extract_path.set(folder)
 
     def load_file(self, file_path: Path):
-        if file_path.suffix.lower() == ".zip":
-            self.is_zip = True
-        elif is_text_file(file_path):
-            self.is_zip = False
-        else:
-            messagebox.showerror("Error", "Please drop a ZIP or text file")
+        self.is_zip = file_path.suffix.lower() == ".zip"
+        if not self.is_zip and not is_text_file(file_path):
+            messagebox.showerror("Error", INVALID_FILE_MSG)
             return
 
         self.file_path = file_path
         self.drop_label.config(text=f"Loaded: {file_path.name}")
 
-        if self.is_zip:
-            extract_path = file_path.with_suffix("")
-        else:
-            extract_path = file_path.with_stem(file_path.stem + "_fixed")
+        extract_path = (
+            file_path.with_suffix("")
+            if self.is_zip
+            else file_path.with_stem(file_path.stem + "_fixed")
+        )
         self.extract_path.set(str(extract_path))
 
-        self.encoding_tree.delete(*self.encoding_tree.get_children())
+        self.detect_and_display_encodings()
 
+    def detect_and_display_encodings(self):
+        self.encoding_tree.delete(*self.encoding_tree.get_children())
         self.root.config(cursor="wait")
         self.root.update()
 
-        self.encoding_results = detect_file_encoding(file_path)
+        self.encoding_results = detect_file_encoding(self.file_path)
 
         for encoding, score, preview in self.encoding_results:
-            self.encoding_tree.insert("", "end", values=(encoding, score, preview[:50]))
+            self.encoding_tree.insert(
+                "", "end", values=(encoding, f"{score:.4f}", preview[:PREVIEW_LENGTH])
+            )
 
-        first_item = self.encoding_tree.get_children()[0]
-        self.encoding_tree.selection_set(first_item)
-        self.extract_btn.config(state="normal")
+        if self.encoding_tree.get_children():
+            self.encoding_tree.selection_set(self.encoding_tree.get_children()[0])
+            self.extract_btn.config(state="normal")
 
         self.root.config(cursor="")
 
-    def extract_zip(self):
+    def extract_file(self):
         selection = self.encoding_tree.selection()
         if not selection:
             messagebox.showerror("Error", "Please select an encoding")
             return
 
-        selected_index = self.encoding_tree.index(selection[0])
-        selected_encoding = self.encoding_results[selected_index][0]
-
+        selected_encoding = self.encoding_results[
+            self.encoding_tree.index(selection[0])
+        ][0]
         extract_path_str = self.extract_path.get().strip()
         if not extract_path_str:
             messagebox.showerror("Error", "Please specify extract location")
             return
 
         extract_path = Path(extract_path_str)
+        self.set_processing_state(True)
+
         try:
-            self.root.config(cursor="wait")
-            self.extract_btn.config(state="disabled", text="Processing...")
-            self.root.update()
-
             if self.is_zip:
-                if not extract_path.is_dir():
-                    extract_path.mkdir(parents=True, exist_ok=True)
-
-                with zipfile.ZipFile(
-                    str(self.file_path), "r", metadata_encoding=selected_encoding
-                ) as zf:
-                    zf.extractall(str(extract_path))
-
-                messagebox.showinfo(
-                    "Success",
-                    f"ZIP file extracted successfully to:\n{extract_path}\n\nUsing encoding: {selected_encoding}",
-                )
-
+                self.extract_zip_file(extract_path, selected_encoding)
             else:
-                with open(
-                    self.file_path, "r", encoding=selected_encoding, errors="ignore"
-                ) as f:
-                    content = f.read()
-
-                with open(extract_path, "w", encoding="utf-8") as f:
-                    f.write(content)
-
-                messagebox.showinfo(
-                    "Success",
-                    f"Text file converted successfully to:\n{extract_path}\n\nFrom encoding: {selected_encoding}",
-                )
-
+                self.convert_text_file(extract_path, selected_encoding)
         except Exception as e:
-            file_type = "ZIP file" if self.is_zip else "text file"
-            messagebox.showerror("Error", f"Failed to process {file_type}: {str(e)}")
-
+            messagebox.showerror("Error", f"Processing failed: {e}")
         finally:
-            self.root.config(cursor="")
-            self.extract_btn.config(
-                state="normal", text="Extract with Selected Encoding"
-            )
+            self.set_processing_state(False)
+
+    def set_processing_state(self, processing: bool):
+        cursor = "wait" if processing else ""
+        btn_state = "disabled" if processing else "normal"
+        btn_text = "Processing..." if processing else "Extract with Selected Encoding"
+
+        self.root.config(cursor=cursor)
+        self.extract_btn.config(state=btn_state, text=btn_text)
+        self.root.update()
+
+    def extract_zip_file(self, extract_path: Path, encoding: str):
+        extract_path.mkdir(parents=True, exist_ok=True)
+        with zipfile.ZipFile(self.file_path, "r", metadata_encoding=encoding) as zf:
+            zf.extractall(extract_path)
+        messagebox.showinfo(
+            "Success", f"ZIP extracted to: {extract_path}\nUsing encoding: {encoding}"
+        )
+
+    def convert_text_file(self, extract_path: Path, encoding: str):
+        with open(self.file_path, "r", encoding=encoding, errors="ignore") as f:
+            content = f.read()
+        with open(extract_path, "w", encoding="utf-8") as f:
+            f.write(content)
+        messagebox.showinfo(
+            "Success", f"Text converted to: {extract_path}\nFrom encoding: {encoding}"
+        )
 
 
 def main():
