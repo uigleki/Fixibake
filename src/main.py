@@ -8,7 +8,7 @@ from tkinterdnd2 import DND_FILES, TkinterDnD
 
 from encoding_utils import detect_file_encoding, is_text_file
 
-PREVIEW_LENGTH = 50
+PREVIEW_LENGTH = 100
 INVALID_FILE_MSG = "Please select a ZIP or text file"
 
 

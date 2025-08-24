@@ -1,30 +1,30 @@
 import re
 import zipfile
+from io import DEFAULT_BUFFER_SIZE
 from pathlib import Path
 from statistics import fmean
 
 import magic
 from wordfreq import zipf_frequency
 
-CJK_PATTERN = re.compile(
-    r"[\u3040-\u309f\u30a0-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uac00-\ud7af]"
-)
+CJK_PATTERN = re.compile(r"[\u3040-\u309f\u30a0-\u30ff\u4e00-\u9fff\uac00-\ud7af]")
 ZIPF_LANGUAGES = ("zh", "ja", "ko")
 
 DEFAULT_ENCODINGS = ("utf-8", "gbk", "big5", "shift_jis", "euc-jp", "euc-kr")
 
-FILE_LIMIT = 1_000
-CJK_LIMIT = 10_000
-CONTENT_PREVIEW = 10_000
+MAX_CJK_CHARS = 10_000
+MAX_ZIP_FILES = 1_000
 
 
 def is_text_file(file_path: str | Path) -> bool:
     """Check if a file is a text file based on its MIME type."""
     with open(file_path, "rb") as f:
-        return magic.from_buffer(f.read(8192), mime=True).startswith("text/")
+        return magic.from_buffer(f.read(DEFAULT_BUFFER_SIZE), mime=True).startswith(
+            "text/"
+        )
 
 
-def score_cjk_text(text: str, limit: int = CJK_LIMIT) -> tuple[float, str]:
+def score_cjk_text(text: str, limit: int = MAX_CJK_CHARS) -> tuple[float, str]:
     """Return a naturalness score for CJK text based on character frequency."""
     cjk_chars = CJK_PATTERN.findall(text)[:limit]
     if not cjk_chars:
@@ -59,11 +59,11 @@ def detect_file_encoding(
             if is_zip:
                 with zipfile.ZipFile(path, "r", metadata_encoding=encoding) as zf:
                     content = "".join(
-                        info.filename for info in zf.infolist()[:FILE_LIMIT]
+                        info.filename for info in zf.infolist()[:MAX_ZIP_FILES]
                     )
             else:
                 with open(path, "r", encoding=encoding, errors="ignore") as f:
-                    content = f.read(CONTENT_PREVIEW)
+                    content = f.read(MAX_CJK_CHARS)
 
         except (UnicodeError, OSError):
             results.append((encoding, -1.0, "DecodeError"))
