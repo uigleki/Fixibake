@@ -1,20 +1,20 @@
 # Fixibake
 
-🌠 A GUI tool for extracting ZIP files with garbled CJK filenames
+🌠 A GUI tool for fixing garbled CJK encodings in ZIP files and text files
 
 ## ✨ Features
 
-- **Drag & Drop**: Simply drag ZIP files onto the application window
+- **Drag & Drop**: Simply drag ZIP or text files onto the application window
 - **CJK Encoding Selection**: Select from a list of CJK encodings with confidence scores
 - **Live Preview**: Preview filename corrections before extraction
 - **One-Click Extract**: Extract files with correct encoding to selected directory
-- **CJK Only**: Specifically designed for CJK (Chinese, Japanese, Korean) filename issues only
+- **Text File Support**: Also supports fixing encoding in text files
 
 ## 🚀 Usage
 
 1. Download the latest release from [GitHub Releases](https://github.com/uigleki/Fixibake/releases/latest)
 2. Extract the ZIP file and run `Fixibake.exe`
-3. Drag and drop a ZIP file with garbled CJK filenames into the window
+3. Drag and drop a ZIP file or text file with garbled CJK characters into the window
 4. Select the appropriate CJK encoding from the dropdown menu
 5. Preview the corrected filenames
 6. Click extract to decompress with proper encoding
